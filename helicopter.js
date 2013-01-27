@@ -81,6 +81,30 @@ Heli.User = function (params) {
         _trail = [];
         momentum = 0;
     }
+    
+    function moveTo(pos) {
+      
+      _distance += 1;
+      
+      // momentum += ((thrusters) ? 0.4 : -0.5);
+      // position += momentum;
+
+      position = pos;
+
+      // if (params.tick() % 2 === 0) {
+      //     _trail.push(position);
+      // }
+      // 
+      // if (_trail.length > 4) {
+      //     _trail.shift();
+      // }
+
+      return position;
+    }
+    
+    function getPos() {
+      return position;
+    }
 
     function move(thrusters) {
 
@@ -107,6 +131,8 @@ Heli.User = function (params) {
     return {
         "reset":reset,
         "move":move,
+        "moveTo":moveTo,
+        "getPos":getPos,
         "trail":trail,
         "distance":distance,
         "finished":finished,
@@ -400,6 +426,7 @@ Heli.Audio = function(game) {
     };
 };
 
+var user = null;
 var HELICOPTER = (function() {
 
     /* Generate Constants from Heli.Consts arrays */
@@ -417,7 +444,7 @@ var HELICOPTER = (function() {
         timer       = null,
         audio       = null,
         screen      = null,
-        user        = null,
+        // user        = null,
         pos         = 0,
         died        = 0,
        _tick        = 0;
@@ -496,8 +523,8 @@ var HELICOPTER = (function() {
         ++_tick;
 
         if (state === Heli.State.PLAYING) {
-
-            pos = user.move(thrustersOn);
+            pos = user.getPos();
+            // pos = user.move(thrustersOn);
             screen.moveTerrain();
 
             screen.draw(ctx);
@@ -512,6 +539,7 @@ var HELICOPTER = (function() {
                 state = Heli.State.DYING;
                 died = _tick;
                 user.finished();
+                
             }
             screen.drawUser(ctx, pos, user.trail(), true);
 
@@ -521,6 +549,8 @@ var HELICOPTER = (function() {
             state = Heli.State.WAITING;
             window.clearInterval(timer);
             timer = null;
+            newGame();
+            
         } else if (state === Heli.State.DYING) {
 
             screen.draw(ctx);
@@ -614,15 +644,15 @@ var HELICOPTER = (function() {
         ctx.fillStyle = Heli.Color.HOME_TEXT;
         ctx.font = "58px silkscreenbold";
 
-        var text = "helicopter";
+        var text = "stylocopter";
         var textWidth = ctx.measureText(text).width,
         x = (screen.width() - textWidth) / 2,
         y = screen.height() / 3;
 
         ctx.fillText(text, x, y);
 
-        var t  = "Click and hold enter key of Mouse Button";
-        var t1 = "to go up, release to go down.";
+        var t  = "Play notes 1-4 to control the copter";
+        var t1 = "";
 
         ctx.font = "12px silkscreen";
 
@@ -630,7 +660,7 @@ var HELICOPTER = (function() {
         ctx.fillText(t1, x + 5, y + 33);
 
         ctx.fillText("press enter or click mouse to start", x + 5, y + 66);
-        ctx.fillText("by dale harvey / arandomurl.com", x + 5, y + 145);
+        ctx.fillText("by SKATTYADZ. Game by dale harvey.", x + 5, y + 145);
     }
 
 
